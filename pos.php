@@ -8,8 +8,28 @@ if(!isset($_SESSION["user"])){
 
 require_once "dbase.php";
 
-$sql = "SELECT * FROM products WHERE stock_quantity > 0";
-$result = mysqli_query($conn, $sql);
+$currentPage = basename($_SERVER['PHP_SELF']);
+
+if (!isset($_SESSION["store_id"])) {
+    die("Store account is not configured.");
+}
+
+$storeId = $_SESSION["store_id"];
+
+$sql = "
+    SELECT *
+    FROM products
+    WHERE stock_quantity > 0
+    AND store_id = ?
+";
+
+$stmt = mysqli_prepare($conn, $sql);
+
+mysqli_stmt_bind_param($stmt, "i", $storeId);
+
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
 ?>
 
 <!DOCTYPE html>
@@ -51,23 +71,23 @@ $result = mysqli_query($conn, $sql);
             <div class="nav-section-label">MENU</div>
 
             <nav>
-                <a class="nav-item" href="index.php">
+                <a class="nav-item <?php echo $currentPage == 'index.php' ? 'active' : ''; ?>" href="index.php">
                     <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>
                     Dashboard
                 </a>
-                <a class="nav-item" href="pos.php">
+                <a class="nav-item <?php echo $currentPage == 'pos.php' ? 'active' : ''; ?>" href="pos.php">
                     <svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="6" width="19" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M2.5 10.5H21.5" stroke="currentColor" stroke-width="1.6"/><path d="M7 14H11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                     Point of Sale
                 </a>
-                <a class="nav-item" href="products.php">
+                <a class="nav-item <?php echo $currentPage == 'products.php' ? 'active' : ''; ?>" href="products.php">
                     <svg viewBox="0 0 24 24" fill="none"><path d="M3 7.5L12 3L21 7.5V16.5L12 21L3 16.5V7.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 7.5L12 12M12 12L21 7.5M12 12V21" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
                     Products
                 </a>
-                <a class="nav-item" href="#">
+                <a class="nav-item <?php echo $currentPage == 'sales_history.php' ? 'active' : ''; ?>" href="sales_history.php">
                     <svg viewBox="0 0 24 24" fill="none"><path d="M4 4V15C4 17.2091 5.79086 19 8 19H20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 15L12 10L15 13L20 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     Sales History
                 </a>
-                <a class="nav-item" href="#">
+                <a class="nav-item <?php echo $currentPage == 'salesReport.php' ? 'active' : ''; ?>" href="salesReport.php">
                     <svg viewBox="0 0 24 24" fill="none"><path d="M6 3H14L19 8V19C19 20.1046 18.1046 21 17 21H6C4.89543 21 4 20.1046 4 19V5C4 3.89543 4.89543 3 6 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 12H15M8 16H15M8 8.5H10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                     Sales Report
                 </a>
@@ -180,33 +200,13 @@ $result = mysqli_query($conn, $sql);
                             <strong id="cartTotal">₱0.00</strong>
                         </div>
 
-                        <div class="mb-3">
-
-                            <label for="payment" class="form-label">
-                                Payment
-                            </label>
-
-                            <input
-                                type="number"
-                                id="payment"
-                                class="form-control"
-                                placeholder="0.00"
-                                step="0.01"
-                                min="0">
-
-                        </div>
-
-                        <div>
-                            <span>Change</span>
-                            <strong id="changeAmount">₱0.00</strong>
-                        </div>
-
-                        <button type="button"
-                                id="completeSaleBtn"
-                                class="btn btn-primary w-100"
-                                data-bs-toggle="modal"
-                                data-bs-target="#checkoutModal"
-                                disabled>
+                        <button
+                            type="button"
+                            id="completeSaleBtn"
+                            class="btn btn-primary w-100"
+                            data-bs-toggle="modal"
+                            data-bs-target="#checkoutModal"
+                            disabled>
                             Checkout
                         </button>
 
@@ -271,28 +271,6 @@ $result = mysqli_query($conn, $sql);
                         </div>
 
 
-                        <!-- PAYMENT INFORMATION -->
-                        <div class="checkout-payment-info">
-
-                            <div>
-                                <span>Amount Received</span>
-
-                                <strong id="checkoutPayment">
-                                    ₱0.00
-                                </strong>
-                            </div>
-
-                            <div>
-                                <span>Change</span>
-
-                                <strong id="checkoutChange">
-                                    ₱0.00
-                                </strong>
-                            </div>
-
-                        </div>
-
-
                         <!-- PAYMENT METHOD -->
                         <div class="checkout-section-title">
                             PAYMENT METHOD
@@ -313,6 +291,38 @@ $result = mysqli_query($conn, $sql);
                                 data-method="GCash">
                                 GCash
                             </button>
+
+                        </div>
+
+
+                        <!-- PAYMENT INFORMATION -->
+                        <div class="checkout-payment-info">
+
+                            <div>
+                                <label for="payment">
+                                    Amount Received
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="payment"
+                                    class="form-control checkout-payment-input"
+                                    placeholder="0.00"
+                                    step="0.01"
+                                    min="0">
+                            </div>
+
+                            <div class="checkout-change-box">
+
+                                <span>
+                                    Change
+                                </span>
+
+                                <strong id="checkoutChange">
+                                    ₱0.00
+                                </strong>
+
+                            </div>
 
                         </div>
 
@@ -344,6 +354,77 @@ $result = mysqli_query($conn, $sql);
 
         </div>
 
+        <!-- SALE COMPLETED MODAL -->
+        <div class="modal fade" id="saleCompletedModal" tabindex="-1" aria-hidden="true">
+
+            <div class="modal-dialog modal-dialog-centered">
+
+                <div class="modal-content sale-completed-modal">
+
+                    <div class="sale-completed-body">
+
+                        <div class="sale-success-icon">
+                            ✓
+                        </div>
+
+                        <h3>Sale Completed</h3>
+
+                        <p class="sale-success-subtitle">
+                            The transaction has been successfully recorded.
+                        </p>
+
+
+                        <div class="sale-details">
+
+                            <div>
+                                <span>Transaction No.</span>
+                                <strong id="completedSaleId">—</strong>
+                            </div>
+
+                            <div>
+                                <span>Total</span>
+                                <strong id="completedSaleTotal">₱0.00</strong>
+                            </div>
+
+                            <div>
+                                <span>Payment</span>
+                                <strong id="completedSalePayment">₱0.00</strong>
+                            </div>
+
+                            <div>
+                                <span>Change</span>
+                                <strong id="completedSaleChange">₱0.00</strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="sale-completed-actions">
+
+                            <button
+                                type="button"
+                                class="btn btn-light"
+                                id="viewTransactionBtn">
+                                View Transaction
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                id="newSaleBtn">
+                                New Sale
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
 
@@ -360,8 +441,12 @@ $result = mysqli_query($conn, $sql);
             const cartItems = document.getElementById("cartItems");
             const cartTotal = document.getElementById("cartTotal");
             const cartSearch = document.getElementById("cartSearch");
+            const paymentInput = document.getElementById("payment");
 
             let cart = [];
+            let currentSaleId = null;
+            let selectedPaymentMethod = "Cash";
+
 
 
             //search product
@@ -385,7 +470,7 @@ $result = mysqli_query($conn, $sql);
             });
 
 
-            //order search
+            //Check out order search
 
             function filterCart() {
 
@@ -575,7 +660,7 @@ $result = mysqli_query($conn, $sql);
                         });
 
 
-                    //typing quantity
+                    //manual quantity
 
                     cartItem
                         .querySelector(".quantity-input")
@@ -625,234 +710,376 @@ $result = mysqli_query($conn, $sql);
 
                 cartTotal.textContent = "₱" + total.toFixed(2);
 
+                // checkout disable if there's no product in cart
+                completeSaleBtn.disabled = cart.length === 0;
+
 
                 //current order searching
 
                 filterCart();
+            }
 
-                // ==========================================
-                // CHECKOUT MODAL
-                // ==========================================
+            // ==========================================
+            // CHECKOUT MODAL
+            // ==========================================
 
-                const checkoutItems =
-                    document.getElementById("checkoutItems");
+            const checkoutItems =
+                document.getElementById("checkoutItems");
 
-                const checkoutTotal =
-                    document.getElementById("checkoutTotal");
+            const checkoutTotal =
+                document.getElementById("checkoutTotal");
 
-                const checkoutPayment =
-                    document.getElementById("checkoutPayment");
+            const checkoutPayment =
+                document.getElementById("checkoutPayment");
 
-                const checkoutChange =
-                    document.getElementById("checkoutChange");
+            const checkoutChange =
+                document.getElementById("checkoutChange");
 
-                const completeSaleBtn =
-                    document.getElementById("completeSaleBtn");
+            const completeSaleBtn =
+                document.getElementById("completeSaleBtn");
 
 
-                // Open Checkout Modal
-                completeSaleBtn.addEventListener("click", function () {
 
-                    // Clear previous items
-                    checkoutItems.innerHTML = "";
+            paymentInput.addEventListener("input", function () {
 
-                    // Display cart products
-                    cart.forEach(function (item) {
+                const total =
+                    parseFloat(
+                        cartTotal.textContent.replace("₱", "")
+                    ) || 0;
 
-                        const itemTotal =
-                            item.price * item.quantity;
+                const payment =
+                    parseFloat(paymentInput.value) || 0;
 
-                        const checkoutItem =
-                            document.createElement("div");
+                const change =
+                    payment - total;
 
-                        checkoutItem.classList.add("checkout-item");
+                checkoutChange.textContent =
+                    "₱" + Math.max(change, 0).toFixed(2);
 
-                        checkoutItem.innerHTML = `
-                            <div>
-                                <div class="checkout-item-name">
-                                    ${item.name}
-                                </div>
+            });
 
-                                <div class="checkout-item-qty">
-                                    × ${item.quantity}
-                                </div>
+
+            // ==========================================
+            // OPEN CHECKOUT MODAL
+            // ==========================================
+
+            completeSaleBtn.addEventListener("click", function () {
+
+                // Clear previous checkout items
+                checkoutItems.innerHTML = "";
+
+
+                // Display current cart
+                cart.forEach(function (item) {
+
+                    const itemTotal =
+                        item.price * item.quantity;
+
+                    const checkoutItem =
+                        document.createElement("div");
+
+                    checkoutItem.classList.add("checkout-item");
+
+                    checkoutItem.innerHTML = `
+                        <div>
+                            <div class="checkout-item-name">
+                                ${item.name}
                             </div>
 
-                            <div class="checkout-item-price">
-                                ₱${itemTotal.toFixed(2)}
+                            <div class="checkout-item-qty">
+                                × ${item.quantity}
                             </div>
-                        `;
+                        </div>
 
-                        checkoutItems.appendChild(checkoutItem);
+                        <div class="checkout-item-price">
+                            ₱${itemTotal.toFixed(2)}
+                        </div>
+                    `;
+
+                    checkoutItems.appendChild(checkoutItem);
+
+                });
+
+
+                // Get total
+                const total =
+                    parseFloat(
+                        cartTotal.textContent.replace("₱", "")
+                    ) || 0;
+
+
+                // Get payment
+                const payment =
+                    parseFloat(paymentInput.value) || 0;
+
+                // Calculate change
+                const change =
+                    payment - total;
+
+                // Display checkout information
+                checkoutTotal.textContent =
+                    "₱" + total.toFixed(2);
+
+                checkoutChange.textContent =
+                    "₱" + Math.max(change, 0).toFixed(2);
+
+            });
+
+            // ==========================================
+            // PAYMENT METHOD
+            // ==========================================
+
+            const paymentMethodButtons =
+                document.querySelectorAll(".payment-method");
+
+            paymentMethodButtons.forEach(function (button) {
+
+                button.addEventListener("click", function () {
+
+                    // Remove active from all buttons
+                    paymentMethodButtons.forEach(function (btn) {
+
+                        btn.classList.remove("active");
 
                     });
 
 
-                    // Get total
-                    const total =
-                        parseFloat(
-                            cartTotal.textContent.replace("₱", "")
-                        ) || 0;
+                    // Make clicked button active
+                    button.classList.add("active");
 
 
-                    // Get payment
-                    const paymentInput =
-                        document.getElementById("payment");
+                    // Save selected payment method
+                    selectedPaymentMethod =
+                        button.dataset.method;
 
-                    const payment =
-                        parseFloat(paymentInput.value) || 0;
+                });
 
-
-                    // Calculate change
-                    const change =
-                        payment - total;
+            });
 
 
-                    // Display values
-                    checkoutTotal.textContent =
-                        "₱" + total.toFixed(2);
+            // ==========================================
+            // COMPLETE SALE
+            // ==========================================
 
-                    checkoutPayment.textContent =
-                        "₱" + payment.toFixed(2);
+            const confirmCheckoutBtn =
+                document.getElementById("confirmCheckoutBtn");
 
-                    checkoutChange.textContent =
-                        "₱" + Math.max(change, 0).toFixed(2);
+            confirmCheckoutBtn.addEventListener("click", function () {
 
-                    // ==========================================
-                    // COMPLETE SALE
-                    // ==========================================
+                // Make sure cart is not empty
+                if (cart.length === 0) {
 
-                    const confirmCheckoutBtn =
-                        document.getElementById("confirmCheckoutBtn");
+                    alert("Cart is empty.");
 
-                    confirmCheckoutBtn.addEventListener("click", function () {
+                    return;
+                }
 
-                        // Make sure cart is not empty
-                        if (cart.length === 0) {
+                const total =
+                    parseFloat(
+                        cartTotal.textContent.replace("₱", "")
+                    ) || 0;
 
-                            alert("Cart is empty.");
+                const payment =
+                    parseFloat(paymentInput.value) || 0;
 
-                            return;
+                if (payment < total) {
+
+                    alert("Amount received is not enough.");
+
+                    paymentInput.focus();
+
+                    return;
+                }
+
+
+                // Create form data
+                const formData = new FormData();
+
+                formData.append(
+                    "cart",
+                    JSON.stringify(cart)
+                );
+
+                formData.append(
+                    "payment",
+                    paymentInput.value
+                );
+
+                formData.append(
+                    "payment_method",
+                    selectedPaymentMethod
+                );
+
+
+                // Disable button while processing
+                confirmCheckoutBtn.disabled = true;
+
+                confirmCheckoutBtn.textContent =
+                    "Processing...";
+
+
+                // Send data to checkout.php
+                fetch("checkout.php", {
+                    method: "POST",
+                    body: formData
+                })
+
+                .then(function (response) {
+
+                    return response.json();
+
+                })
+
+                .then(function (data) {
+
+                    console.log(data);
+
+
+                    if (data.success) {
+
+                        // ==========================================
+                        // SALE COMPLETED MODAL
+                        // ==========================================
+
+                        const saleCompletedModalElement =
+                            document.getElementById("saleCompletedModal");
+
+                        const saleCompletedModal =
+                            bootstrap.Modal.getOrCreateInstance(
+                                saleCompletedModalElement
+                            );
+
+
+                        const completedSaleId =
+                            document.getElementById("completedSaleId");
+
+                        const completedSaleTotal =
+                            document.getElementById("completedSaleTotal");
+
+                        const completedSalePayment =
+                            document.getElementById("completedSalePayment");
+
+                        const completedSaleChange =
+                            document.getElementById("completedSaleChange");
+
+                        // Save the current transaction number
+                        currentSaleId = data.sale_id;
+
+                        // Display sale information
+                        completedSaleId.textContent =
+                            "#" + data.sale_id;
+
+                        completedSaleTotal.textContent =
+                            "₱" + data.total;
+
+                        completedSalePayment.textContent =
+                            "₱" + data.payment;
+
+                        completedSaleChange.textContent =
+                            "₱" + data.change;
+
+
+                        // ==========================================
+                        // CLOSE CHECKOUT MODAL FIRST
+                        // ==========================================
+
+                        const checkoutModalElement =
+                            document.getElementById("checkoutModal");
+
+                        const checkoutModal =
+                            bootstrap.Modal.getInstance(
+                                checkoutModalElement
+                            );
+
+
+                        if (checkoutModal) {
+
+                            checkoutModalElement.addEventListener(
+                                "hidden.bs.modal",
+                                function () {
+
+                                    saleCompletedModal.show();
+
+                                },
+                                {
+                                    once: true
+                                }
+                            );
+
+                            checkoutModal.hide();
+
+                        } else {
+
+                            saleCompletedModal.show();
+
                         }
 
 
-                        // Create form data
-                        const formData = new FormData();
+                    } else {
 
-                        formData.append(
-                            "cart",
-                            JSON.stringify(cart)
+                        alert(
+                            "Checkout failed:\n" +
+                            data.message
                         );
 
-                        formData.append(
-                            "payment",
-                            paymentInput.value
-                        );
+                    }
 
+                })
 
-                        // Disable button while processing
-                        confirmCheckoutBtn.disabled = true;
+                .catch(function (error) {
 
-                        confirmCheckoutBtn.textContent =
-                            "Processing...";
+                    console.error("Checkout error:", error);
 
+                    alert(
+                        "Something went wrong while processing the sale."
+                    );
 
-                        // Send cart to checkout.php
-                        fetch("checkout.php", {
-                            method: "POST",
-                            body: formData
-                        })
+                })
 
-                        .then(function (response) {
+                .finally(function () {
 
-                            return response.json();
+                    confirmCheckoutBtn.disabled = false;
 
-                        })
+                    confirmCheckoutBtn.textContent =
+                        "Complete Sale";
 
-                        .then(function (data) {
-
-                            console.log(data);
-
-
-                            // ==========================================
-                            // SUCCESS
-                            // ==========================================
-
-                            if (data.success) {
-
-                                alert(
-                                    "Sale completed successfully!\n\n" +
-                                    "Transaction No.: " + data.sale_id
-                                );
-
-
-                            } else {
-
-                                alert(
-                                    "Checkout failed:\n" +
-                                    data.message
-                                );
-
-                            }
-
-                        })
-
-                        .catch(function (error) {
-
-                            console.error("Checkout error:", error);
-
-                            alert(
-                                "Something went wrong while processing the sale."
-                            );
-
-                        })
-
-                        .finally(function () {
-
-                            confirmCheckoutBtn.disabled = false;
-
-                            confirmCheckoutBtn.textContent =
-                                "Complete Sale";
-
-                        });
-
-                    });    
                 });
 
-            }
+            });
 
-        });
-        </script>
+            // ==========================================
+            // NEW SALE
+            // ==========================================
 
-    
-    <script>
-        //sukli update
-        document.addEventListener("DOMContentLoaded", function () {
-            const paymentInput = document.getElementById("payment");
-            const cartTotal = document.getElementById("cartTotal");
-            const changeAmount = document.getElementById("changeAmount");
-            const completeSaleBtn = document.getElementById("completeSaleBtn");
+            const newSaleBtn =
+                document.getElementById("newSaleBtn");
 
+            newSaleBtn.addEventListener("click", function () {
 
-            paymentInput.addEventListener("input", function () {
-                const total = parseFloat(cartTotal.textContent.replace("₱", "")) || 0;
-                const payment = parseFloat(paymentInput.value) || 0;
-                const change = payment - total;
+                window.location.href = "pos.php";
 
-                if (payment >= total && total > 0) {
-                    changeAmount.textContent = "₱" + change.toFixed(2);
-                    completeSaleBtn.disabled = false;
-                } else {
-                    changeAmount.textContent = "₱0.00";
-                    completeSaleBtn.disabled = true;
+            });
+
+            // ==========================================
+            // VIEW TRANSACTION
+            // ==========================================
+
+            const viewTransactionBtn =
+                document.getElementById("viewTransactionBtn");
+
+            viewTransactionBtn.addEventListener("click", function () {
+
+                if (currentSaleId) {
+
+                    window.location.href =
+                        "sales_history.php?sale_id=" + currentSaleId;
+
                 }
-
 
             });
 
         });
     </script>
-    
 
 </body>
 </html>

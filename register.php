@@ -1,3 +1,12 @@
+<?php
+//check if user log in
+session_start();
+if (isset($_SESSION["user"])) {
+    header("Location: index.php");
+    exit();
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,11 +24,12 @@
             $email = $_POST["email"];
             $password = $_POST["password"];
             $confirmPassword = $_POST["repeatpassword"];
+            $storeName = $_POST["storename"];
 
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             $errors = array();
 
-            if (empty($fullname) OR empty($email) OR empty($password) OR empty($confirmPassword)) {
+            if (empty($fullname) OR empty($email) OR empty($password) OR empty($confirmPassword) OR empty($storeName)) {
                 array_push($errors, "All field must be fill");
             }
 
@@ -48,15 +58,71 @@
                     echo "<div class='alert alert-danger'>$error</div>";
                 }
             } else {
-                $sql = "INSERT INTO users (FULL_NAME, EMAIL, PASSWORD) VALUES(?, ?, ?)";
-                $stmt = mysqli_stmt_init($conn);
-                $prepareStmt = mysqli_stmt_prepare($stmt, $sql);
-                if ($prepareStmt) {
-                    mysqli_stmt_bind_param($stmt, "sss", $fullname, $email, $hashedPassword);
-                    mysqli_stmt_execute($stmt);
-                    echo "<div class='alert alert-success'>Registered Successfully</div>";
-                } else {
-                    die("Something went wrong");
+                
+                mysqli_begin_transaction($conn);
+
+                try {
+                    // Create the store first
+                    $sqlStore = "INSERT INTO stores (store_name) VALUES (?)";
+
+                    $stmtStore = mysqli_stmt_init($conn);
+
+                    if (!mysqli_stmt_prepare($stmtStore, $sqlStore)) {
+                        throw new Exception("Could not create store.");
+                    }
+
+                    mysqli_stmt_bind_param(
+                        $stmtStore,
+                        "s",
+                        $storeName
+                    );
+
+                    mysqli_stmt_execute($stmtStore);
+
+                    // Get the newly created store ID
+                    $storeId = mysqli_insert_id($conn);
+
+
+                    // Create the user and connect it to the store
+                    $sqlUser = "
+                        INSERT INTO users
+                        (FULL_NAME, EMAIL, PASSWORD, store_id)
+                        VALUES (?, ?, ?, ?)
+                    ";
+
+                    $stmtUser = mysqli_stmt_init($conn);
+
+                    if (!mysqli_stmt_prepare($stmtUser, $sqlUser)) {
+                        throw new Exception("Could not create user.");
+                    }
+
+                    mysqli_stmt_bind_param(
+                        $stmtUser,
+                        "sssi",
+                        $fullname,
+                        $email,
+                        $hashedPassword,
+                        $storeId
+                    );
+
+                    mysqli_stmt_execute($stmtUser);
+
+
+                    // Save both changes
+                    mysqli_commit($conn);
+
+                    echo "<div class='alert alert-success'>
+                            Registered Successfully
+                        </div>";
+
+                } catch (Exception $e) {
+
+                    // Undo everything if something fails
+                    mysqli_rollback($conn);
+
+                    echo "<div class='alert alert-danger'>
+                            Registration failed.
+                        </div>";
                 }
 
             }
@@ -65,17 +131,45 @@
 
         <form action="register.php" method="post">
             <div class="form-group">
-                <input type="text" class="form-control" name="fullname" placeholder="Fullname:">
+                <input
+                    type="text"
+                    class="form-control"
+                    name="fullname"
+                    placeholder="Fullname:">
             </div>
+
             <div class="form-group">
-                <input type="email" class="form-control" name="email" placeholder="Email:">
+                <input
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    placeholder="Email:">
             </div>
+
             <div class="form-group">
-                <input type="password" class="form-control" name="password" placeholder="Password:">
+                <input
+                    type="password"
+                    class="form-control"
+                    name="password"
+                    placeholder="Password:">
             </div>
+
             <div class="form-group">
-                <input type="password" class="form-control" name="repeatpassword" placeholder="Confirm Password:">
+                <input
+                    type="password"
+                    class="form-control"
+                    name="repeatpassword"
+                    placeholder="Confirm Password:">
             </div>
+
+            <div class="form-group">
+                <input
+                    type="text"
+                    class="form-control"
+                    name="storename"
+                    placeholder="Store Name:">
+            </div>
+
             <div class="form-btn">
                 <input type="submit" class="btn btn-primary" value="Register" name="submit">
             </div>

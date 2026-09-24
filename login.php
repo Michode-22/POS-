@@ -3,7 +3,9 @@
 session_start();
 if (isset($_SESSION["user"])) {
     header("Location: index.php");
+    exit();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,11 +31,14 @@ if (isset($_SESSION["user"])) {
 
             //return false if email does not exist in the database
             if ($user) {
+
                 //check if user passward match in hashedpassword in the database
                 if(password_verify($password, $user["PASSWORD"])) {
-                    session_start();
-                    $_SESSION["user"] = "Sarinas lang masarap";
+                    $_SESSION["user"] = $user["ID"];
+                    $_SESSION["store_id"] = $user["store_id"];
+
                     header("Location: index.php");
+                    exit();
                 } else {
                     echo "<div class='alert alert-danger'>Password is incorrect</div>";
                 }
@@ -59,6 +64,16 @@ if (isset($_SESSION["user"])) {
             </div>
         </form>
     </div>
+
+<script>
+window.addEventListener("pageshow", function (event) {
+
+    if (event.persisted) {
+        window.location.reload();
+    }
+
+});
+</script>
     
 </body>
 </html>

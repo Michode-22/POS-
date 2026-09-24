@@ -8,6 +8,14 @@ if (!isset($_SESSION["user"])) {
 //database conn
 require_once "dbase.php";
 
+if (!isset($_SESSION["store_id"])) {
+    die("Store account is not configured.");
+}
+
+$storeId = $_SESSION["store_id"];
+
+$currentPage = basename($_SERVER['PHP_SELF']);
+
 
 //Success notification
 $successMessage = "";
@@ -33,16 +41,17 @@ if (isset($_POST["add_product"])) {
     $productName = $_POST["product_name"];
     $category = $_POST["category"];
     $price = $_POST["price"];
+    $cost = $_POST["cost"];
     $stockQuantity = $_POST["stock_quantity"];
     $reorderLevel = $_POST["reorder_level"];
 
 
     //check duplicate product
-    $checkSql = "SELECT product_id FROM products WHERE product_name = ? AND category = ?";
+    $checkSql = "SELECT product_id FROM products WHERE product_name = ? AND category = ? AND store_id = ?";
 
     $checkStmt = mysqli_prepare($conn, $checkSql);
 
-    mysqli_stmt_bind_param($checkStmt, "ss", $productName, $category);
+    mysqli_stmt_bind_param($checkStmt, "ssi", $productName, $category, $storeId);
 
     mysqli_stmt_execute($checkStmt);
 
@@ -59,11 +68,11 @@ if (isset($_POST["add_product"])) {
 
 
 
-    $sql = "INSERT INTO products (product_name, category, price, stock_quantity, reorder_level) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO products (product_name, category, price, cost, stock_quantity, reorder_level, store_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = mysqli_prepare($conn, $sql);
 
-    mysqli_stmt_bind_param($stmt, "ssdii", $productName, $category, $price, $stockQuantity, $reorderLevel);
+    mysqli_stmt_bind_param($stmt, "ssddiii", $productName, $category, $price, $cost, $stockQuantity, $reorderLevel, $storeId);
 
     if (mysqli_stmt_execute($stmt)) {
         $_SESSION["success"] = "Product added successfully!";
@@ -78,16 +87,17 @@ if (isset($_POST["update_product"])) {
     $productName = $_POST["product_name"];
     $category = $_POST["category"];
     $price = $_POST["price"];
+    $cost = $_POST["edit_cost"];
     $stockQuantity = $_POST["stock_quantity"];
     $reorderLevel = $_POST["reorder_level"];
 
 
     //check duplicate item in database
-    $checkSql = "SELECT product_id FROM products WHERE product_name = ? AND category = ? AND product_id != ?";
+    $checkSql = "SELECT product_id FROM products WHERE product_name = ? AND category = ? AND product_id != ? AND store_id = ?";
 
     $checkStmt = mysqli_prepare($conn, $checkSql);
 
-    mysqli_stmt_bind_param($checkStmt, "ssi", $productName, $category, $productId);
+    mysqli_stmt_bind_param($checkStmt, "ssii", $productName, $category, $productId, $storeId);
 
     mysqli_stmt_execute($checkStmt);
 
@@ -102,12 +112,13 @@ if (isset($_POST["update_product"])) {
     }
 
     $sql = "UPDATE products 
-            SET product_name = ?, category = ?, price = ?, stock_quantity = ?, reorder_level = ?
-            WHERE product_id = ?";
+            SET product_name = ?, category = ?, price = ?, cost = ?, stock_quantity = ?, reorder_level = ?
+            WHERE product_id = ?
+            AND store_id = ?";
 
             $stmt = mysqli_prepare($conn,$sql);
 
-            mysqli_stmt_bind_param($stmt, "ssdiii", $productName, $category, $price, $stockQuantity, $reorderLevel, $productId);
+            mysqli_stmt_bind_param($stmt, "ssddiiii", $productName, $category, $price, $cost, $stockQuantity, $reorderLevel, $productId, $storeId);
 
             if (mysqli_stmt_execute($stmt)) {
                 $_SESSION["success"] = "Product update successfully";
@@ -117,28 +128,49 @@ if (isset($_POST["update_product"])) {
             }
 }
 
-//delete data
+// delete data
 if (isset($_POST["delete_product"])) {
+
     $productId = $_POST["product_id"];
 
-    $sql = "DELETE FROM products WHERE product_id = ?";
+    $sql = "
+        DELETE FROM products
+        WHERE product_id = ?
+        AND store_id = ?
+    ";
 
     $stmt = mysqli_prepare($conn, $sql);
 
-    mysqli_stmt_bind_param($stmt, "i", $productId);
+    mysqli_stmt_bind_param(
+        $stmt,
+        "ii",
+        $productId,
+        $storeId
+    );
 
-    if(mysqli_stmt_execute($stmt)) {
+    if (mysqli_stmt_execute($stmt)) {
 
         $_SESSION["success"] = "Product deleted successfully";
         header("Location: products.php");
         exit();
+
     }
 }
 
 //fetch data
 
-$sql = "SELECT * FROM products";
-$result = mysqli_query($conn, $sql);
+$sql = "SELECT * FROM products WHERE store_id = ?";
+$stmt = mysqli_prepare($conn, $sql);
+
+mysqli_stmt_bind_param(
+    $stmt,
+    "i",
+    $storeId
+);
+
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
 
 $productsRow = mysqli_num_rows($result);
 $productLabel = ($productsRow == 1) ? "Product" : "Products";
@@ -176,23 +208,23 @@ $productLabel = ($productsRow == 1) ? "Product" : "Products";
         <div class="nav-section-label">MENU</div>
 
         <nav>
-      <a class="nav-item active" href="index.php">
+      <a class="nav-item <?php echo $currentPage == 'index.php' ? 'active' : ''; ?>" href="index.php">
         <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="3" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="12" width="7" height="9" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="16" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>
         Dashboard
       </a>
-      <a class="nav-item" href="pos.php">
+      <a class="nav-item <?php echo $currentPage == 'pos.php' ? 'active' : ''; ?>" href="pos.php">
         <svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="6" width="19" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M2.5 10.5H21.5" stroke="currentColor" stroke-width="1.6"/><path d="M7 14H11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         Point of Sale
       </a>
-      <a class="nav-item" href="products.php">
+      <a class="nav-item <?php echo $currentPage == 'products.php' ? 'active' : ''; ?>" href="products.php">
         <svg viewBox="0 0 24 24" fill="none"><path d="M3 7.5L12 3L21 7.5V16.5L12 21L3 16.5V7.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 7.5L12 12M12 12L21 7.5M12 12V21" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
         Products
       </a>
-      <a class="nav-item" href="#">
+      <a class="nav-item <?php echo $currentPage == 'sales_history.php' ? 'active' : ''; ?>" href="sales_history.php">
         <svg viewBox="0 0 24 24" fill="none"><path d="M4 4V15C4 17.2091 5.79086 19 8 19H20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 15L12 10L15 13L20 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Sales History
       </a>
-      <a class="nav-item" href="#">
+      <a class="nav-item <?php echo $currentPage == 'salesReport.php' ? 'active' : ''; ?>" href="salesReport.php">
         <svg viewBox="0 0 24 24" fill="none"><path d="M6 3H14L19 8V19C19 20.1046 18.1046 21 17 21H6C4.89543 21 4 20.1046 4 19V5C4 3.89543 4.89543 3 6 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 12H15M8 16H15M8 8.5H10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         Sales Report
       </a>
@@ -439,6 +471,18 @@ $productLabel = ($productsRow == 1) ? "Product" : "Products";
                             required>
                     </div>
 
+                    <div class="mb-3">
+                        <label class="form-label">Cost</label>
+                        <input
+                            type="number"
+                            name="edit_cost"
+                            id="edit_cost"
+                            class="form-control"
+                            step="0.01"
+                            min="0"
+                            required>
+                    </div>
+
 
                     <div class="mb-3">
                         <label for="editStock" class="form-label">
@@ -573,6 +617,17 @@ $productLabel = ($productsRow == 1) ? "Product" : "Products";
                             required>
                     </div>
 
+                    <div class="mb-3">
+                        <label class="form-label">Cost</label>
+                        <input
+                            type="number"
+                            name="cost"
+                            class="form-control"
+                            step="0.01"
+                            min="0"
+                            required>
+                    </div>
+
 
                     <div class="mb-3">
                         <label for="stockQuantity" class="form-label">
@@ -653,6 +708,7 @@ $productLabel = ($productsRow == 1) ? "Product" : "Products";
                     <th>ID</th>
                     <th>Product Name</th>
                     <th>Category</th>
+                    <th>Cost</th>
                     <th>Price</th>
                     <th>Stock</th>
                     <th>Status</th>
@@ -683,6 +739,7 @@ $productLabel = ($productsRow == 1) ? "Product" : "Products";
                     <td><?php echo $row["product_id"];?></td>
                     <td><?php echo $row["product_name"];?></td>
                     <td><?php echo $row["category"];?></td>
+                    <td>₱<?php echo $row["cost"]; ?></td>
                     <td>₱<?php echo $row["price"];?></td>
                     <td><?php echo $row["stock_quantity"];?></td>
                     <td>
@@ -706,6 +763,7 @@ $productLabel = ($productsRow == 1) ? "Product" : "Products";
                             data-name="<?php echo htmlspecialchars($row["product_name"]); ?>"
                             data-category="<?php echo htmlspecialchars($row["category"]); ?>"
                             data-price="<?php echo $row["price"]; ?>"
+                            data-cost="<?php echo $row["cost"]; ?>"
                             data-stock="<?php echo $row["stock_quantity"]; ?>"
                             data-reorder="<?php echo $row["reorder_level"]; ?>">
                             Edit
@@ -738,8 +796,9 @@ $productLabel = ($productsRow == 1) ? "Product" : "Products";
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-//edit
+
 <script>
+//edit
 document.addEventListener("DOMContentLoaded", function () {
 
     const editButtons = document.querySelectorAll(".edit-product-btn");
@@ -760,6 +819,9 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("editPrice").value =
                 button.dataset.price;
 
+            document.getElementById("edit_cost").value =
+                button.dataset.cost;
+
             document.getElementById("editStock").value =
                 button.dataset.stock;
 
@@ -773,8 +835,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-//delete
+
 <script>
+//delete
 document.addEventListener("DOMContentLoaded", function () {
 
     const deleteButtons = document.querySelectorAll(".delete-product-btn");
@@ -796,8 +859,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-//success notification
+
 <script>
+//success notification
     document.addEventListener("DOMContentLoaded", function () {
 
     const toastElement = document.getElementById("successToast");
@@ -814,8 +878,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-//error notification
 <script>
+    //error notification
 document.addEventListener("DOMContentLoaded", function () {
 
     const toastElement = document.getElementById("errorToast");
@@ -833,8 +897,9 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 
-//live ssearching
+
 <script>
+    //live ssearching
 document.addEventListener("DOMContentLoaded", function () {
 
     const searchInput = document.getElementById("searchProduct");

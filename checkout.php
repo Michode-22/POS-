@@ -16,6 +16,16 @@ if (!isset($_SESSION["user"])) {
 
 require_once "dbase.php";
 
+if (!isset($_SESSION["store_id"])) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Store account is not configured."
+    ]);
+    exit();
+}
+
+$storeId = $_SESSION["store_id"];
+
 
 // ==========================================
 // CHECK REQUEST METHOD
@@ -39,6 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 $cart = json_decode($_POST["cart"] ?? "", true);
 
 $payment = floatval($_POST["payment"] ?? 0);
+$paymentMethod = $_POST["payment_method"] ?? "Cash";
 
 
 // ==========================================
@@ -88,21 +99,42 @@ try {
         // Lock this product row while checkout is happening
         $stmt = mysqli_prepare(
             $conn,
-            "SELECT product_name, price, stock_quantity
-             FROM products
-             WHERE product_id = ?
-             FOR UPDATE"
+            "SELECT product_name, price, cost, stock_quantity
+            FROM products
+            WHERE product_id = ?
+            AND store_id = ?
+            FOR UPDATE"
         );
+
+        if (!$stmt) {
+            throw new Exception(
+                "Failed to prepare product lookup: " .
+                mysqli_error($conn)
+            );
+        }
 
         mysqli_stmt_bind_param(
             $stmt,
-            "i",
-            $productId
+            "ii",
+            $productId,
+            $storeId
         );
 
-        mysqli_stmt_execute($stmt);
+        if (!mysqli_stmt_execute($stmt)) {
+            throw new Exception(
+                "Failed to check product: " .
+                mysqli_stmt_error($stmt)
+            );
+        }
 
         $result = mysqli_stmt_get_result($stmt);
+
+        if (!$result) {
+            throw new Exception(
+                "Failed to get product result: " .
+                mysqli_error($conn)
+            );
+        }
 
         $product = mysqli_fetch_assoc($result);
 
@@ -137,10 +169,11 @@ try {
 
         // Store product information for later
         $products[] = [
-            "id" => $productId,
-            "name" => $product["product_name"],
-            "price" => floatval($product["price"]),
-            "quantity" => $quantity
+            "id"=>$productId,
+            "name"=>$product["product_name"],
+            "price"=>floatval($product["price"]),
+            "cost"=>floatval($product["cost"]),
+            "quantity"=>$quantity
         ];
 
     }
@@ -162,16 +195,23 @@ try {
     // INSERT INTO SALES
     // ==========================================
 
+    $change = $payment - $total;
+
     $stmt = mysqli_prepare(
         $conn,
-        "INSERT INTO sales (total_amount)
-         VALUES (?)"
+        "INSERT INTO sales
+        (total_amount, store_id, payment_method, amount_paid, change_amount)
+        VALUES (?, ?, ?, ?, ?)"
     );
 
     mysqli_stmt_bind_param(
         $stmt,
-        "d",
-        $total
+        "disdd",
+        $total,
+        $storeId,
+        $paymentMethod,
+        $payment,
+        $change
     );
 
     mysqli_stmt_execute($stmt);
@@ -189,20 +229,17 @@ try {
 
 
         // INSERT SALE ITEM
-        $stmt = mysqli_prepare(
-            $conn,
+        $stmt = mysqli_prepare($conn,
             "INSERT INTO sale_item
-            (sale_id, product_id, quantity, price)
-            VALUES (?, ?, ?, ?)"
-        );
+            (sale_id, product_id, quantity, price, cost)
+            VALUES (?, ?, ?, ?, ?)");
 
-        mysqli_stmt_bind_param(
-            $stmt,
-            "iiid",
+        mysqli_stmt_bind_param($stmt, "iiidd",
             $saleId,
             $product["id"],
             $product["quantity"],
-            $product["price"]
+            $product["price"],
+            $product["cost"]
         );
 
         mysqli_stmt_execute($stmt);
@@ -243,11 +280,11 @@ try {
 
 
     echo json_encode([
-        "success" => true,
-        "sale_id" => $saleId,
-        "total" => number_format($total, 2, ".", ""),
-        "payment" => number_format($payment, 2, ".", ""),
-        "change" => number_format($change, 2, ".", "")
+    "success" => true,
+    "sale_id" => $saleId,
+    "total" => number_format($total, 2, ".", ""),
+    "payment" => number_format($payment, 2, ".", ""),
+    "change" => number_format($change, 2, ".", ""),
     ]);
 
 }

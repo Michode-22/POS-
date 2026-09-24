@@ -1,6 +1,12 @@
+# Database backups
+*.sql
+#Environment / secret files
 .env
-.env.*
-!.env.example
-vendor/
-node_modules/
+#xampp temporary files
 *.log
+#IDE files
+.idea/
+.vscode/
+#OS files
+Thumbs.db 
+.DS_Store
