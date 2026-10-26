@@ -1,0 +1,388 @@
+
+/* =========================================
+   STOCKIT — REGISTRATION PAGE
+   Matching the centered login design
+========================================= */
+
+body.stockit-register-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 36px 24px;
+    display: grid;
+    place-items: center;
+    background: #f1f4f9;
+    color: #172b45;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.stockit-register-page *,
+.stockit-register-page *::before,
+.stockit-register-page *::after {
+    box-sizing: border-box;
+}
+
+.stockit-register-page a {
+    text-decoration: none;
+}
+
+.stockit-register-card {
+    width: min(620px, 100%);
+    margin: auto;
+    overflow: hidden;
+    border: 1px solid #e6ebf2;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 20px 55px rgba(11, 30, 56, 0.12);
+}
+
+.stockit-register-content {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 46px 40px 34px;
+}
+
+/* Heading */
+
+.stockit-register-heading {
+    margin-bottom: 27px;
+}
+
+.stockit-register-kicker {
+    display: block;
+    margin-bottom: 13px;
+    color: #2b6cb0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.7px;
+}
+
+.stockit-register-heading h1 {
+    margin: 0 0 12px;
+    color: #102846;
+    font-size: clamp(30px, 4vw, 37px);
+    font-weight: 750;
+    line-height: 1.2;
+    letter-spacing: -1.4px;
+}
+
+.stockit-register-heading p {
+    margin: 0;
+    color: #768499;
+    font-size: 13px;
+    line-height: 1.85;
+}
+
+/* Form */
+
+.stockit-register-form {
+    display: grid;
+    gap: 18px;
+}
+
+.stockit-register-field {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 8px;
+}
+
+.stockit-register-field label {
+    margin: 0;
+    color: #263b54;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.stockit-register-field > input,
+.stockit-register-password-wrap {
+    width: 100%;
+    min-width: 0;
+    min-height: 49px;
+    border: 1px solid #dfe6ef;
+    border-radius: 10px;
+    background: #fbfcfe;
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.stockit-register-field > input {
+    padding: 0 14px;
+    color: #1c3049;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+}
+
+.stockit-register-field > input::placeholder,
+.stockit-register-password-wrap input::placeholder {
+    color: #a5b0be;
+    opacity: 1;
+}
+
+.stockit-register-field > input:focus,
+.stockit-register-password-wrap:focus-within {
+    border-color: #3b82c4;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 196, 0.11);
+}
+
+.stockit-field-hint {
+    color: #8996a7;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+/* Password fields */
+
+.stockit-register-password-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.stockit-register-password-wrap {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+}
+
+.stockit-register-password-wrap input {
+    width: 100%;
+    min-width: 0;
+    height: 47px;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #1c3049;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.stockit-register-password-wrap input:focus {
+    border: 0;
+    outline: none;
+    background: transparent;
+    box-shadow: none;
+}
+
+.stockit-register-toggle {
+    flex: 0 0 auto;
+    padding: 7px 0 7px 7px;
+    border: 0;
+    background: transparent;
+    color: #2b6cb0;
+    font-size: 11px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.stockit-register-toggle:hover {
+    color: #174d82;
+}
+
+/* Submit button */
+
+.stockit-register-submit {
+    width: 100%;
+    min-height: 51px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 4px;
+    padding: 0 18px;
+    border: 1px solid #2466a7;
+    border-radius: 10px;
+    background: linear-gradient(105deg, #2b6cb0, #1b568f);
+    box-shadow: 0 8px 18px rgba(43, 108, 176, 0.19);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 750;
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+    cursor: pointer;
+}
+
+.stockit-register-submit svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.18s ease;
+}
+
+.stockit-register-submit:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(105deg, #245f9c, #164879);
+    box-shadow: 0 11px 23px rgba(43, 108, 176, 0.26);
+}
+
+.stockit-register-submit:hover svg {
+    transform: translateX(3px);
+}
+
+.stockit-register-submit:focus-visible,
+.stockit-register-toggle:focus-visible,
+.stockit-register-footer a:focus-visible,
+.stockit-success-link:focus-visible {
+    outline: 3px solid rgba(59, 130, 196, 0.4);
+    outline-offset: 3px;
+}
+
+/* Error and success messages */
+
+.stockit-register-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin-bottom: 22px;
+    padding: 14px;
+    border: 1px solid;
+    border-radius: 11px;
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+.stockit-register-alert.error {
+    border-color: #f1c7c7;
+    background: #fff6f6;
+    color: #a83232;
+}
+
+.stockit-register-alert.success {
+    border-color: #b8e3c9;
+    background: #f2fbf5;
+    color: #206b43;
+}
+
+.stockit-register-alert-icon {
+    width: 20px;
+    height: 20px;
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.stockit-register-alert strong {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 750;
+}
+
+.stockit-register-alert ul {
+    margin: 5px 0 0;
+    padding-left: 17px;
+}
+
+.stockit-register-alert p {
+    margin: 4px 0 8px;
+}
+
+.stockit-success-link {
+    color: #2b6cb0;
+    font-weight: 750;
+}
+
+.stockit-success-link:hover {
+    text-decoration: underline;
+}
+
+/* Security note and footer */
+
+.stockit-register-security {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    color: #8190a3;
+    font-size: 10px;
+    line-height: 1.7;
+    text-align: center;
+}
+
+.stockit-register-security svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    margin-top: 1px;
+    color: #3c8c67;
+}
+
+.stockit-register-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #edf0f5;
+    color: #8290a1;
+    font-size: 12px;
+    text-align: center;
+}
+
+.stockit-register-footer a {
+    color: #2b6cb0;
+    font-weight: 750;
+}
+
+.stockit-register-footer a:hover {
+    color: #174d82;
+    text-decoration: underline;
+}
+
+.stockit-register-copyright {
+    margin: 21px 0 0;
+    color: #a3adba;
+    font-size: 10px;
+    text-align: center;
+}
+
+/* Responsive layout */
+
+@media (max-width: 600px) {
+    body.stockit-register-page {
+        padding: 16px;
+    }
+
+    .stockit-register-card {
+        width: 100%;
+        border-radius: 16px;
+    }
+
+    .stockit-register-content {
+        padding: 32px 23px 27px;
+    }
+
+    .stockit-register-password-row {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .stockit-register-heading h1 {
+        font-size: 31px;
+    }
+}
+
+@media (max-width: 360px) {
+    .stockit-register-content {
+        padding: 27px 17px 23px;
+    }
+
+    .stockit-register-heading h1 {
+        font-size: 28px;
+    }
+}

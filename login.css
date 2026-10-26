@@ -1,0 +1,886 @@
+/* =========================================
+   STOCKIT LOGIN PAGE
+   Scoped styles to protect the other pages
+========================================= */
+
+body.stockit-login-page {
+    margin: 0;
+    min-height: 100vh;
+    padding: 24px;
+    display: grid;
+    place-items: center;
+    background: #f1f4f9;
+    color: #172b45;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.stockit-login-page *,
+.stockit-login-page *::before,
+.stockit-login-page *::after {
+    box-sizing: border-box;
+}
+
+.stockit-login-page a {
+    text-decoration: none;
+}
+
+.stockit-auth-layout {
+    width: min(1180px, 100%);
+    min-height: min(780px, calc(100vh - 48px));
+    display: grid;
+    grid-template-columns: 1fr 0.94fr;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e6ebf2;
+    border-radius: 26px;
+    box-shadow: 0 24px 70px rgba(11, 30, 56, 0.12);
+}
+
+/* LEFT BRAND PANEL */
+
+.stockit-brand-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0;
+    padding: clamp(28px, 4vw, 52px);
+    overflow: hidden;
+    color: #ffffff;
+    background:
+        radial-gradient(
+            circle at 82% 12%,
+            rgba(59, 130, 196, 0.20),
+            transparent 32%
+        ),
+        linear-gradient(145deg, #0b1e38 0%, #0f2a4d 56%, #16375f 100%);
+}
+
+.stockit-brand-panel::before {
+    content: "";
+    position: absolute;
+    width: 310px;
+    height: 310px;
+    right: -165px;
+    top: 180px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 28px rgba(255, 255, 255, 0.025),
+        0 0 0 58px rgba(255, 255, 255, 0.02);
+    pointer-events: none;
+}
+
+.stockit-brand {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 13px;
+    width: fit-content;
+    color: #ffffff;
+}
+
+.stockit-brand:hover {
+    color: #ffffff;
+}
+
+.stockit-brand-mark {
+    width: 45px;
+    height: 45px;
+    display: inline-grid;
+    flex-shrink: 0;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 13px;
+    background: linear-gradient(145deg, #4c9be8, #2b6cb0);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.17);
+    color: #ffffff;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.stockit-brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stockit-brand-text strong {
+    color: #ffffff;
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 750;
+    letter-spacing: -0.8px;
+}
+
+.stockit-brand-text small {
+    color: #aebfd4;
+    font-size: 9px;
+    line-height: 1.4;
+    font-weight: 700;
+    letter-spacing: 1.45px;
+}
+
+.stockit-brand-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 470px;
+    margin: 52px auto 34px;
+}
+
+.stockit-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 22px;
+    color: #b7d8fa;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 1.65px;
+}
+
+.stockit-eyebrow-dot,
+.stockit-preview-dot {
+    width: 7px;
+    height: 7px;
+    display: inline-block;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #68b5ff;
+    box-shadow: 0 0 12px rgba(104, 181, 255, 0.55);
+}
+
+.stockit-brand-content h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(34px, 3.6vw, 47px);
+    line-height: 1.13;
+    font-weight: 750;
+    letter-spacing: -1.9px;
+}
+
+.stockit-brand-content h1 span {
+    color: #70b7ff;
+}
+
+.stockit-brand-description {
+    max-width: 410px;
+    margin: 20px 0 27px;
+    color: #c0cede;
+    font-size: 14px;
+    line-height: 1.9;
+}
+
+.stockit-feature-list {
+    display: grid;
+    gap: 17px;
+    margin-top: 26px;
+}
+
+.stockit-feature {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.stockit-feature-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.065);
+    color: #83c2ff;
+}
+
+.stockit-feature-icon svg {
+    width: 21px;
+    height: 21px;
+}
+
+.stockit-feature > span:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stockit-feature strong {
+    color: #f5f8fc;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.stockit-feature small {
+    color: #aebfd4;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Decorative workspace illustration */
+
+.stockit-preview {
+    margin-top: 32px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(8px);
+}
+
+.stockit-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 13px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stockit-preview-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #dce8f7;
+    font-size: 9px;
+    font-weight: 750;
+    letter-spacing: 1.1px;
+}
+
+.stockit-preview-label {
+    color: #b8cae0;
+    font-size: 10px;
+}
+
+.stockit-preview-body {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 14px;
+    padding-top: 14px;
+}
+
+.stockit-preview-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    align-items: center;
+    padding-top: 2px;
+}
+
+.preview-nav {
+    width: 18px;
+    height: 5px;
+    display: block;
+    border-radius: 4px;
+    background: rgba(202, 220, 242, 0.3);
+}
+
+.preview-nav.active {
+    width: 24px;
+    height: 23px;
+    background: #3b82c4;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+}
+
+.preview-nav.short {
+    width: 13px;
+}
+
+.stockit-preview-main {
+    min-width: 0;
+}
+
+.preview-line {
+    display: block;
+    height: 6px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    background: rgba(233, 242, 252, 0.6);
+}
+
+.preview-line.wide {
+    width: 44%;
+}
+
+.preview-line.medium {
+    width: 28%;
+    background: rgba(233, 242, 252, 0.22);
+}
+
+.preview-mini-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 12px;
+}
+
+.preview-mini-cards span {
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.11);
+}
+
+.stockit-preview .stockit-preview-body .preview-chart {
+    height: 64px;
+    display: flex;
+    align-items: end;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 10px 12px 0;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 7px 7px 0 0;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent 15px,
+            rgba(255, 255, 255, 0.07) 16px
+        );
+}
+
+.stockit-preview .preview-chart span {
+    flex: 1;
+    min-width: 3px;
+    max-width: 20px;
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(to top, #3b82c4, #8bc9ff);
+    opacity: 0.9;
+}
+
+.stockit-brand-footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: #9eb2cb;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+.stockit-footer-line {
+    width: 25px;
+    height: 2px;
+    background: #4b99e3;
+    border-radius: 2px;
+}
+
+/* RIGHT LOGIN PANEL */
+
+.stockit-login-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: clamp(28px, 5vw, 64px);
+    background: #ffffff;
+}
+
+.stockit-login-content {
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+}
+
+.stockit-mobile-brand {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+    margin-bottom: 35px;
+    color: #0b1e38;
+}
+
+.stockit-mobile-brand .stockit-brand-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    font-size: 22px;
+}
+
+.stockit-mobile-brand strong {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.7px;
+}
+
+.stockit-login-heading {
+    margin-bottom: 30px;
+}
+
+.stockit-login-kicker {
+    display: block;
+    margin-bottom: 13px;
+    color: #2b6cb0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.7px;
+}
+
+.stockit-login-heading h2 {
+    margin: 0 0 12px;
+    color: #102846;
+    font-size: clamp(32px, 3vw, 39px);
+    font-weight: 750;
+    line-height: 1.18;
+    letter-spacing: -1.5px;
+}
+
+.stockit-login-heading p {
+    max-width: 360px;
+    margin: 0;
+    color: #768499;
+    font-size: 13px;
+    line-height: 1.85;
+}
+
+/* Error message */
+
+.stockit-login-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 21px;
+    padding: 12px 14px;
+    border: 1px solid #f1c7c7;
+    border-radius: 10px;
+    background: #fff6f6;
+    color: #a83232;
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+.stockit-alert-icon {
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #f8dfdf;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+/* Form elements */
+
+.stockit-login-form {
+    display: grid;
+    gap: 22px;
+}
+
+.stockit-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.stockit-form-group label {
+    margin: 0;
+    color: #263b54;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.stockit-input-wrap {
+    min-width: 0;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 0 14px;
+    border: 1px solid #dfe6ef;
+    border-radius: 11px;
+    background: #fbfcfe;
+    transition:
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.stockit-input-wrap:focus-within {
+    border-color: #3b82c4;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 196, 0.11);
+}
+
+.stockit-input-icon {
+    width: 19px;
+    height: 19px;
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    color: #8191a5;
+}
+
+.stockit-input-icon svg {
+    width: 19px;
+    height: 19px;
+}
+
+.stockit-input-wrap input {
+    width: 100%;
+    min-width: 0;
+    height: 49px;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #1c3049;
+    font: inherit;
+    font-size: 13px;
+}
+
+.stockit-input-wrap input::placeholder {
+    color: #a5b0be;
+    opacity: 1;
+}
+
+.stockit-input-wrap input:focus {
+    outline: none;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.stockit-toggle-password {
+    flex: 0 0 auto;
+    padding: 7px 0 7px 8px;
+    border: 0;
+    background: transparent;
+    color: #2b6cb0;
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.stockit-toggle-password:hover {
+    color: #174d82;
+}
+
+/* Sign-in button */
+
+.stockit-submit-btn {
+    width: 100%;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 5px;
+    padding: 0 18px;
+    border: 1px solid #2466a7;
+    border-radius: 11px;
+    background: linear-gradient(105deg, #2b6cb0, #1b568f);
+    box-shadow: 0 8px 18px rgba(43, 108, 176, 0.19);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 750;
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+    cursor: pointer;
+}
+
+.stockit-submit-btn svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.18s ease;
+}
+
+.stockit-submit-btn:hover {
+    background: linear-gradient(105deg, #245f9c, #164879);
+    box-shadow: 0 11px 23px rgba(43, 108, 176, 0.26);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.stockit-submit-btn:hover svg {
+    transform: translateX(3px);
+}
+
+.stockit-submit-btn:focus-visible,
+.stockit-toggle-password:focus-visible,
+.stockit-register-prompt a:focus-visible {
+    outline: 3px solid rgba(59, 130, 196, 0.4);
+    outline-offset: 3px;
+}
+
+/* Security and footer */
+
+.stockit-security-note {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 23px;
+    color: #8190a3;
+    font-size: 10px;
+    line-height: 1.7;
+    text-align: center;
+}
+
+.stockit-security-note svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    margin-top: 1px;
+    color: #3c8c67;
+}
+
+.stockit-register-prompt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid #edf0f5;
+    color: #8290a1;
+    font-size: 12px;
+    text-align: center;
+}
+
+.stockit-register-prompt a {
+    color: #2b6cb0;
+    font-weight: 750;
+}
+
+.stockit-register-prompt a:hover {
+    color: #174d82;
+    text-decoration: underline;
+}
+
+.stockit-login-copyright {
+    margin: 24px 0 0;
+    color: #a3adba;
+    font-size: 10px;
+    text-align: center;
+}
+
+/* RESPONSIVE LAYOUT */
+
+@media (max-width: 1050px) {
+    .stockit-auth-layout {
+        grid-template-columns: 0.95fr 1fr;
+    }
+
+    .stockit-brand-panel {
+        padding: 32px;
+    }
+
+    .stockit-login-panel {
+        padding: 36px;
+    }
+
+    .stockit-brand-content h1 {
+        font-size: 37px;
+    }
+}
+
+@media (max-width: 800px) {
+    body.stockit-login-page {
+        padding: 16px;
+        align-items: start;
+    }
+
+    .stockit-auth-layout {
+        width: min(500px, 100%);
+        min-height: calc(100vh - 32px);
+        grid-template-columns: 1fr;
+        border-radius: 20px;
+    }
+
+    .stockit-brand-panel {
+        display: none;
+    }
+
+    .stockit-login-panel {
+        padding: 35px 28px;
+    }
+
+    .stockit-mobile-brand {
+        display: inline-flex;
+    }
+
+    .stockit-login-heading h2 {
+        font-size: 34px;
+    }
+
+    .stockit-login-copyright {
+        margin-top: 24px;
+    }
+}
+
+@media (max-width: 380px) {
+    body.stockit-login-page {
+        padding: 8px;
+    }
+
+    .stockit-auth-layout {
+        min-height: calc(100vh - 16px);
+        border-radius: 16px;
+    }
+
+    .stockit-login-panel {
+        padding: 28px 19px;
+    }
+
+    .stockit-login-heading h2 {
+        font-size: 30px;
+    }
+
+    .stockit-login-heading p {
+        font-size: 12px;
+    }
+
+    .stockit-input-wrap {
+        padding: 0 10px;
+    }
+}
+
+/* =========================================
+   STOCKIT — CENTERED LOGIN ONLY
+========================================= */
+
+body.stockit-login-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 24px;
+    display: grid;
+    place-items: center;
+    background: #f1f4f9;
+}
+
+/* Show only one centered login card */
+.stockit-auth-layout {
+    display: block;
+    width: min(440px, 100%);
+    min-height: 0;
+    margin: auto;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e6ebf2;
+    border-radius: 20px;
+    box-shadow: 0 20px 55px rgba(11, 30, 56, 0.12);
+}
+
+/* Hide the large branding panel */
+.stockit-brand-panel {
+    display: none !important;
+}
+
+/* Hide the separate mobile logo */
+.stockit-mobile-brand {
+    display: none !important;
+}
+
+/* Center the login content inside the card */
+.stockit-login-panel {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 42px 36px;
+    background: #ffffff;
+}
+
+.stockit-login-content {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+/* Keep the card comfortable on small screens */
+@media (max-width: 480px) {
+    body.stockit-login-page {
+        padding: 16px;
+    }
+
+    .stockit-auth-layout {
+        width: 100%;
+        border-radius: 16px;
+    }
+
+    .stockit-login-panel {
+        padding: 32px 22px;
+    }
+}
+
+/* =========================================
+   STOCKIT — WIDE CENTERED LOGIN CARD
+========================================= */
+
+body.stockit-login-page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 24px;
+    display: grid;
+    place-items: center;
+    background: #f1f4f9;
+}
+
+.stockit-auth-layout {
+    display: block;
+    width: min(620px, 100%);
+    min-height: 0;
+    margin: auto;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e6ebf2;
+    border-radius: 20px;
+    box-shadow: 0 20px 55px rgba(11, 30, 56, 0.12);
+}
+
+.stockit-brand-panel,
+.stockit-mobile-brand {
+    display: none !important;
+}
+
+.stockit-login-panel {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 52px 60px;
+    background: #ffffff;
+}
+
+.stockit-login-content {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Mobile and tablet */
+@media (max-width: 600px) {
+    body.stockit-login-page {
+        padding: 16px;
+    }
+
+    .stockit-auth-layout {
+        width: 100%;
+        border-radius: 16px;
+    }
+
+    .stockit-login-panel {
+        padding: 32px 24px;
+    }
+}
