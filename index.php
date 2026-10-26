@@ -37,7 +37,6 @@ $storeData = mysqli_fetch_assoc($resultStoreName);
 $storeName = $storeData["store_name"] ?? "your store";
 
 mysqli_stmt_close($stmtStoreName);
-
 $currentPage = basename($_SERVER['PHP_SELF']);
 
 
@@ -339,6 +338,25 @@ $resultRecentTransactions = mysqli_stmt_get_result($stmtRecentTransactions);
                         ₱<?php echo number_format($todaySales, 2); ?>
                     </div>
                 </div>
+                <div class="stat-icon icon-blue">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2V22"
+                              stroke="currentColor"
+                              stroke-width="1.7"
+                              stroke-linecap="round"/>
+
+                        <path d="M17 6.5C17 4.6 14.8 3 12 3
+                                C9.2 3 7 4.6 7 6.5
+                                C7 8.4 9.2 9.4 12 10
+                                C14.8 10.6 17 11.6 17 13.5
+                                C17 15.4 14.8 17 12 17
+                                C9.2 17 7 15.4 7 13.5"
+                              stroke="currentColor"
+                              stroke-width="1.7"
+                              stroke-linecap="round"/>
+                    </svg>
+                </div>
+
             </div>
 
             <div class="stat-foot">
@@ -359,6 +377,30 @@ $resultRecentTransactions = mysqli_stmt_get_result($stmtRecentTransactions);
                     <div class="stat-value">
                         <?php echo number_format($todayTransactions); ?>
                     </div>
+                </div>
+
+                <div class="stat-icon icon-blue">
+                    <svg viewBox="0 0 24 24" fill="none">
+
+                        <rect x="3"
+                              y="4"
+                              width="18"
+                              height="16"
+                              rx="2"
+                              stroke="currentColor"
+                              stroke-width="1.6"/>
+
+                        <path d="M7 9H17"
+                              stroke="currentColor"
+                              stroke-width="1.6"
+                              stroke-linecap="round"/>
+
+                        <path d="M7 13H14"
+                              stroke="currentColor"
+                              stroke-width="1.6"
+                              stroke-linecap="round"/>
+
+                    </svg>
                 </div>
 
             </div>
@@ -382,6 +424,26 @@ $resultRecentTransactions = mysqli_stmt_get_result($stmtRecentTransactions);
                         <?php echo number_format($totalProducts); ?>
                     </div>
                 </div>
+                <div class="stat-icon icon-blue">
+                    <svg viewBox="0 0 24 24" fill="none">
+
+                        <path d="M3 7.5L12 3L21 7.5V16.5L12 21L3 16.5V7.5Z"
+                              stroke="currentColor"
+                              stroke-width="1.6"
+                              stroke-linejoin="round"/>
+
+                        <path d="M3 7.5L12 12L21 7.5"
+                              stroke="currentColor"
+                              stroke-width="1.6"
+                              stroke-linejoin="round"/>
+
+                        <path d="M12 12V21"
+                              stroke="currentColor"
+                              stroke-width="1.6"/>
+
+                    </svg>
+                </div>
+
             </div>
 
             <div class="stat-foot">
@@ -404,7 +466,26 @@ $resultRecentTransactions = mysqli_stmt_get_result($stmtRecentTransactions);
                     </div>
                 </div>
 
-                
+                <div class="stat-icon icon-amber">
+                    <svg viewBox="0 0 24 24" fill="none">
+
+                        <path d="M12 3L22 20H2L12 3Z"
+                              stroke="currentColor"
+                              stroke-width="1.6"
+                              stroke-linejoin="round"/>
+
+                        <path d="M12 9.5V13.5"
+                              stroke="currentColor"
+                              stroke-width="1.7"
+                              stroke-linecap="round"/>
+
+                        <circle cx="12"
+                                cy="16.3"
+                                r="0.9"
+                                fill="currentColor"/>
+
+                    </svg>
+                </div>
 
             </div>
 

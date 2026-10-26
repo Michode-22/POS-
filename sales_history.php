@@ -141,7 +141,7 @@ $result = mysqli_stmt_get_result($stmt);
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <title>Sales History</title>
+    <title>StockIT — Sales History</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
